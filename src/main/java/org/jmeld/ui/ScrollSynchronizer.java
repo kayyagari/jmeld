@@ -31,14 +31,14 @@ import java.util.List;
 
 public class ScrollSynchronizer
 {
-  private BufferDiffPanel diffPanel;
-  private FilePanel filePanelLeft;
-  private FilePanel filePanelRight;
+  private DiffPanelIF diffPanel;
+  private ScrollableIF filePanelLeft;
+  private ScrollableIF filePanelRight;
   private AdjustmentListener horizontalAdjustmentListener;
   private AdjustmentListener verticalAdjustmentListener;
 
-  public ScrollSynchronizer(BufferDiffPanel diffPanel, FilePanel filePanelLeft,
-      FilePanel filePanelRight)
+  public ScrollSynchronizer(DiffPanelIF diffPanel, ScrollableIF filePanelLeft,
+          ScrollableIF filePanelRight)
   {
     this.diffPanel = diffPanel;
     this.filePanelLeft = filePanelLeft;
@@ -68,8 +68,8 @@ public class ScrollSynchronizer
   private void scroll(boolean leftScrolled)
   {
     JMRevision revision;
-    FilePanel fp1;
-    FilePanel fp2;
+    ScrollableIF fp1;
+    ScrollableIF fp2;
     int line;
 
     revision = diffPanel.getCurrentRevision();
@@ -189,13 +189,13 @@ public class ScrollSynchronizer
     }
   }
 
-  void showDelta(JMDelta delta)
+  public void showDelta(JMDelta delta)
   {
     scrollToLine(filePanelLeft, delta.getOriginal().getAnchor());
     scroll(true);
   }
 
-  private int getCurrentLineCenter(FilePanel fp)
+  private int getCurrentLineCenter(ScrollableIF fp)
   {
     JScrollPane scrollPane;
     BufferDocumentIF bd;
@@ -226,10 +226,10 @@ public class ScrollSynchronizer
     return line;
   }
 
-  public void scrollToLine(FilePanel fp, int line)
+  public void scrollToLine(ScrollableIF fp, int line)
   {
     JScrollPane scrollPane;
-    FilePanel fp2;
+    ScrollableIF fp2;
     BufferDocumentIF bd;
     JTextComponent editor;
     JViewport viewport;
@@ -295,7 +295,7 @@ public class ScrollSynchronizer
     }
   }
 
-  private int getHeightOffset(FilePanel fp)
+  private int getHeightOffset(ScrollableIF fp)
   {
     JScrollPane scrollPane;
     JViewport viewport;
@@ -312,7 +312,7 @@ public class ScrollSynchronizer
     return offset;
   }
 
-  private int getCorrectionOffset(FilePanel fp)
+  private int getCorrectionOffset(ScrollableIF fp)
   {
     JTextComponent editor;
     int offset;

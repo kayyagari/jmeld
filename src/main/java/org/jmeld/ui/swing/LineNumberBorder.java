@@ -29,7 +29,7 @@ public class LineNumberBorder
     extends EmptyBorder
 {
   private static int MARGIN = 4;
-  private FilePanel filePanel;
+  private JTextArea editor;
   private Color background;
   private Color lineColor;
   private Font font;
@@ -37,11 +37,11 @@ public class LineNumberBorder
   private int fontHeight;
   private boolean enableBlame = true;
 
-  public LineNumberBorder(FilePanel filePanel)
+  public LineNumberBorder(JTextArea editor)
   {
     super(0, 40 + MARGIN, 0, 0);
 
-    this.filePanel = filePanel;
+    this.editor = editor;
 
     init();
   }
@@ -61,7 +61,7 @@ public class LineNumberBorder
     background = ColorUtil.brighter(baseColor);
     font = new Font("Monospaced", Font.PLAIN, 10);
 
-    fm = filePanel.getEditor().getFontMetrics(font);
+    fm = editor.getFontMetrics(font);
     fontWidth = fm.stringWidth("0");
     fontHeight = fm.getHeight();
   }
@@ -86,7 +86,6 @@ public class LineNumberBorder
     String s;
     int heightCorrection;
     Rectangle r1;
-    JTextArea textArea;
     Graphics2D g2;
 
     g2 = (Graphics2D) g;
@@ -95,10 +94,9 @@ public class LineNumberBorder
 
     try
     {
-      textArea = filePanel.getEditor();
-      startLine = textArea.getLineOfOffset(startOffset);
-      endLine = textArea.getLineOfOffset(endOffset);
-      r1 = textArea.modelToView(startOffset);
+      startLine = editor.getLineOfOffset(startOffset);
+      endLine = editor.getLineOfOffset(endOffset);
+      r1 = editor.modelToView(startOffset);
       y = r1.y;
       lineHeight = r1.height;
       heightCorrection = (lineHeight - fontHeight) / 2;

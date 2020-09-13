@@ -34,11 +34,11 @@ import java.awt.event.MouseListener;
 public class RevisionBar
     extends JComponent
 {
-  private BufferDiffPanel diffPanel;
-  private FilePanel filePanel;
+  private DiffPanelIF diffPanel;
+  private ScrollableIF filePanel;
   private boolean original;
 
-  public RevisionBar(BufferDiffPanel diffPanel, FilePanel filePanel,
+  public RevisionBar(DiffPanelIF diffPanel, ScrollableIF filePanel,
       boolean original)
   {
     this.diffPanel = diffPanel;

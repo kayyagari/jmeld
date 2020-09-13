@@ -42,7 +42,7 @@ public interface BufferDocumentIF
 
   public BlameIF getVersionControlBlame();
 
-  public AbstractBufferDocument.Line[] getLines();
+  public Line[] getLines();
 
   public String getLineText(int lineNumber);
 

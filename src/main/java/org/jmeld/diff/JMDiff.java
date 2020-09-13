@@ -100,8 +100,8 @@ public class JMDiff
       rev = new Object[] {};
     }
 
-      filtered = org instanceof AbstractBufferDocument.Line[]
-              && rev instanceof AbstractBufferDocument.Line[];
+      filtered = org instanceof Line[]
+              && rev instanceof Line[];
 
     sp = new StopWatch();
     sp.start();

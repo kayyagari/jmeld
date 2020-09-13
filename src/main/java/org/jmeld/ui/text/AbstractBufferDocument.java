@@ -18,7 +18,6 @@ package org.jmeld.ui.text;
 
 import org.jmeld.JMeldException;
 import org.jmeld.util.StopWatch;
-import org.jmeld.util.StringUtil;
 import org.jmeld.vc.BlameIF;
 
 import javax.swing.event.DocumentEvent;
@@ -34,9 +33,9 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
 
     private String name;
     private String shortName;
-    private Line[] lineArray;
+    protected Line[] lineArray;
     private int[] lineOffsetArray;
-    private PlainDocument document;
+    protected PlainDocument document;
     private MyGapContent content;
     private List<BufferDocumentChangeListenerIF> listeners;
 
@@ -57,12 +56,12 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
         listeners.remove(listener);
     }
 
-    abstract int getBufferSize();
+    protected abstract int getBufferSize();
 
     abstract public Reader getReader()
             throws JMeldException;
 
-    abstract Writer getWriter()
+    protected abstract Writer getWriter()
             throws JMeldException;
 
     protected void setName(String name) {
@@ -198,7 +197,7 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
         }
     }
 
-    private void initLines() {
+    protected void initLines() {
         Element paragraph;
         Element e;
         int size;
@@ -215,7 +214,7 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
         lineOffsetArray = new int[lineArray.length];
         for (int i = 0; i < lineArray.length; i++) {
             e = paragraph.getElement(i);
-            line = new Line(e);
+            line = new Line(content, e);
 
             lineArray[i] = line;
             lineOffsetArray[i] = line.getOffset();
@@ -244,196 +243,6 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
         } catch (Exception ex) {
             throw new JMeldException("Problem writing document (name=" + getName()
                     + ") from buffer", ex);
-        }
-    }
-
-    class MyGapContent
-            extends GapContent {
-        public MyGapContent(int length) {
-            super(length);
-        }
-
-        char[] getCharArray() {
-            return (char[]) getArray();
-        }
-
-        public char getChar(int offset) {
-            int g0;
-            int g1;
-
-            g0 = getGapStart();
-            g1 = getGapEnd();
-
-            if (offset >= g0) {
-                // Take into account the gap!
-                // This offset is above the gap.
-                offset = g1 + offset - g0;
-            }
-
-            return getCharArray()[offset];
-        }
-
-        public boolean equals(MyGapContent c2, int start1, int end1, int start2) {
-            char[] array1;
-            char[] array2;
-            int g1_0;
-            int g1_1;
-            int g2_0;
-            int g2_1;
-            int size;
-            int o1;
-            int o2;
-
-            array1 = getCharArray();
-            array2 = c2.getCharArray();
-
-            g1_0 = getGapStart();
-            g1_1 = getGapEnd();
-            g2_0 = c2.getGapStart();
-            g2_1 = c2.getGapEnd();
-
-            if (start1 >= g1_0) {
-                o1 = start1 + g1_1 - g1_0;
-            } else {
-                o1 = start1;
-            }
-
-            if (start2 >= g2_0) {
-                o2 = start2 + g2_1 - g2_0;
-            } else {
-                o2 = start2;
-            }
-
-            size = end1 - start1;
-            for (int i = 0; i < size; i++, o1++, o2++) {
-                if (o1 == g1_0) {
-                    o1 += g1_1 - g1_0;
-                }
-
-                if (o2 == g2_0) {
-                    o2 += g2_1 - g2_0;
-                }
-
-                if (array1[o1] != array2[o2]) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public int hashCode(int start, int end) {
-            char[] array;
-            int g0;
-            int g1;
-            int size;
-            int h;
-            int o;
-
-            h = 0;
-
-            array = getCharArray();
-
-            g0 = getGapStart();
-            g1 = getGapEnd();
-
-            // Mind the gap!
-            if (start >= g0) {
-                o = start + g1 - g0;
-            } else {
-                o = start;
-            }
-
-            size = end - start;
-            for (int i = 0; i < size; i++, o++) {
-                // Mind the gap!
-                if (o == g0) {
-                    o += g1 - g0;
-                }
-
-                h = 31 * h + array[o];
-            }
-
-            if (h == 0) {
-                h = 1;
-            }
-
-            return h;
-        }
-
-        public int getDigest() {
-            return hashCode(0, document.getLength());
-        }
-    }
-
-    public class Line
-            implements Comparable {
-        Element element;
-
-        Line(Element element) {
-            this.element = element;
-        }
-
-        MyGapContent getContent() {
-            return content;
-        }
-
-        public int getOffset() {
-            return element.getEndOffset();
-        }
-
-        public void print() {
-            System.out.printf("[%08d]: %s\n", getOffset(), StringUtil
-                    .replaceNewLines(toString()));
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            Element element2;
-            Line line2;
-            int start1;
-            int start2;
-            int end1;
-            int end2;
-
-            if (!(o instanceof Line)) {
-                return false;
-            }
-
-            line2 = ((Line) o);
-            element2 = line2.element;
-
-            start1 = element.getStartOffset();
-            end1 = element.getEndOffset();
-            start2 = element2.getStartOffset();
-            end2 = element2.getEndOffset();
-
-            // If the length is different the element is not equal!
-            if ((end1 - start1) != (end2 - start2)) {
-                return false;
-            }
-
-            return content.equals(line2.getContent(), start1, end1, start2);
-        }
-
-        @Override
-        public int hashCode() {
-            return content.hashCode(element.getStartOffset(), element.getEndOffset());
-        }
-
-        @Override
-        public String toString() {
-            try {
-                return content.getString(element.getStartOffset(),
-                        element.getEndOffset() - element.getStartOffset());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return "";
-            }
-        }
-
-        public int compareTo(Object line) {
-            return toString().compareTo(((Line) line).toString());
         }
     }
 
@@ -470,7 +279,7 @@ public abstract class AbstractBufferDocument implements BufferDocumentIF, Docume
     }
 
     public int createDigest() {
-        return content.getDigest();
+        return content.getDigest(document.getLength());
     }
 
     private void documentChanged(DocumentEvent de) {

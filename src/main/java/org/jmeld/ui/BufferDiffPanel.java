@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class BufferDiffPanel extends AbstractContentPanel implements ConfigurationListenerIF {
+public class BufferDiffPanel extends AbstractContentPanel implements ConfigurationListenerIF, DiffPanelIF {
     public static final int LEFT = 0;
     public static final int MIDDLE = 1; //TODO: Usar el comparador del medio con dos JDiff
     public static final int RIGHT = 2;
@@ -804,7 +804,7 @@ public class BufferDiffPanel extends AbstractContentPanel implements Configurati
                 model.setDestiny(revDoc.getText(0, revDoc.getLength()));
                 //Add to renderer instead
                 model.setCurrentRevision(currentRevision);
-                model.setFilePanels(filePanels);
+                model.setPanels(filePanels);
                 model.setShowSelectionPath(checkSolutionPath.isSelected());
                 model.buildModel();
 

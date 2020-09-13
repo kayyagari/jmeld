@@ -5,6 +5,7 @@ import org.jmeld.diff.JMDelta;
 import org.jmeld.diff.JMRevision;
 import org.jmeld.ui.BufferDiffPanel;
 import org.jmeld.ui.FilePanel;
+import org.jmeld.ui.ScrollableIF;
 import org.jmeld.ui.text.BufferDocumentIF;
 import org.jmeld.ui.util.Colors;
 
@@ -28,7 +29,7 @@ public class LevenshteinTableModel extends DefaultTableModel {
     String origin;
     String destiny;
     private JMRevision currentRevision;
-    private FilePanel[] filePanels;
+    private ScrollableIF[] filePanels;
     private HashMap<Point,Color> routeDiff;
     private HashMap<Point, MatteBorder> borderChunks;
     private HashMap<Point, MatteBorder> borderSelections;
@@ -90,7 +91,7 @@ public class LevenshteinTableModel extends DefaultTableModel {
     }
 
     private boolean isAllDataAvaliable() {
-        return getFilePanels() != null && getCurrentRevision() != null && origin != null && destiny != null;
+        return filePanels != null && getCurrentRevision() != null && origin != null && destiny != null;
     }
 
     class ColorPoint extends Point {
@@ -375,13 +376,9 @@ public class LevenshteinTableModel extends DefaultTableModel {
         return currentRevision;
     }
 
-    public void setFilePanels(FilePanel[] filePanels) {
+    public void setPanels(ScrollableIF[] filePanels) {
         this.filePanels = filePanels;
         buildModel();
-    }
-
-    public FilePanel[] getFilePanels() {
-        return filePanels;
     }
 
     public boolean isShowSelectionPath() {

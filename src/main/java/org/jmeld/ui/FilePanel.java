@@ -44,7 +44,7 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.*;
 
-public class FilePanel implements BufferDocumentChangeListenerIF, ConfigurationListenerIF {
+public class FilePanel implements BufferDocumentChangeListenerIF, ConfigurationListenerIF, ScrollableIF {
     private static final int MAXSIZE_CHANGE_DIFF = 1000;
 
     private BufferDiffPanel diffPanel;
@@ -268,7 +268,7 @@ public class FilePanel implements BufferDocumentChangeListenerIF, ConfigurationL
         if (showLineNumbers) {
             if (originalBorder == null) {
                 originalBorder = editor.getBorder();
-                editor.setBorder(new LineNumberBorder(this));
+                editor.setBorder(new LineNumberBorder(getEditor()));
                 editor.putClientProperty(propertyName, originalBorder);
             }
         } else {

@@ -23,7 +23,9 @@ import org.jmeld.diff.TypeDiff;
 import org.jmeld.settings.EditorSettings;
 import org.jmeld.settings.JMeldSettings;
 import org.jmeld.ui.BufferDiffPanel;
+import org.jmeld.ui.DiffPanelIF;
 import org.jmeld.ui.FilePanel;
+import org.jmeld.ui.ScrollableIF;
 import org.jmeld.ui.text.BufferDocumentIF;
 import org.jmeld.ui.util.RevisionUtil;
 import org.jmeld.util.conf.ConfigurationListenerIF;
@@ -42,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiffScrollComponent extends JComponent implements ChangeListener, ConfigurationListenerIF {
-    private BufferDiffPanel diffPanel;
+    private DiffPanelIF diffPanel;
     private int fromPanelIndex;
     private int toPanelIndex;
     private List<Command> commands;
@@ -53,7 +55,7 @@ public class DiffScrollComponent extends JComponent implements ChangeListener, C
 
     private boolean drawCurves;
 
-    public DiffScrollComponent(BufferDiffPanel diffPanel, int fromPanelIndex,
+    public DiffScrollComponent(DiffPanelIF diffPanel, int fromPanelIndex,
                                int toPanelIndex) {
         this.diffPanel = diffPanel;
         this.fromPanelIndex = fromPanelIndex;
@@ -236,8 +238,8 @@ public class DiffScrollComponent extends JComponent implements ChangeListener, C
         Rectangle rect;
         boolean selected;
         int selectionWidth;
-        FilePanel fromPanel;
-        FilePanel toPanel;
+        ScrollableIF fromPanel;
+        ScrollableIF toPanel;
 
         bounds = g2.getClipBounds();
         g2.setClip(null);
@@ -650,11 +652,11 @@ public class DiffScrollComponent extends JComponent implements ChangeListener, C
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antiAlias);
     }
 
-    private FilePanel getFromPanel() {
+    private ScrollableIF getFromPanel() {
         return diffPanel.getFilePanel(fromPanelIndex);
     }
 
-    private FilePanel getToPanel() {
+    private ScrollableIF getToPanel() {
         return diffPanel.getFilePanel(toPanelIndex);
     }
 }
