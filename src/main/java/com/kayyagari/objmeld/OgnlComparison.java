@@ -71,11 +71,14 @@ public class OgnlComparison extends SwingWorker<String, Object> {
             diffNode.setBufferNodeRight(new OgnlNode("right", rightFile));
 
             contentId = "BufferDiffPanel:" + diffNode.getId();
+            // perform diff synchronously to prevent showing of empty documents
+            diffNode.diff();
+            /*
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     diffNode.diff();
                 }
-            });
+            });*/
         } catch (Exception ex) {
             ex.printStackTrace();
 
