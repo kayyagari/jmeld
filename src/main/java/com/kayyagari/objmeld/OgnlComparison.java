@@ -1,15 +1,22 @@
 package com.kayyagari.objmeld;
 
-import java.awt.BorderLayout;
+import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import org.jdesktop.swingworker.SwingWorker;
-import org.jmeld.ui.AbstractContentPanel;
 import org.jmeld.util.node.JMDiffNode;
+
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * @author Kiran Ayyagari (kayyagari@apache.org)
@@ -17,17 +24,16 @@ import org.jmeld.util.node.JMDiffNode;
 public class OgnlComparison extends SwingWorker<String, Object> {
     private JPanel mainPanel;
     private JMDiffNode diffNode;
-    private String leftFile;
-    private String rightFile;
+    private OgnlContent leftFile;
+    private OgnlContent rightFile;
     private OgnlBufferDiffPanel panel;
-    private AbstractContentPanel contentPanel;
     private String contentId;
 
     private boolean openInBackground;
     private boolean showLevenstein;
     private boolean showTree;
 
-    public OgnlComparison(JPanel mainPanel, String leftFile, String rightFile) {
+    public OgnlComparison(JPanel mainPanel, OgnlContent leftFile, OgnlContent rightFile) {
         this.mainPanel = mainPanel;
         this.leftFile = leftFile;
         this.rightFile = rightFile;
@@ -60,19 +66,16 @@ public class OgnlComparison extends SwingWorker<String, Object> {
     @Override
     public String doInBackground() {
         try {
-            diffNode = new JMDiffNode("abcd", true);
+            diffNode = new JMDiffNode(leftFile.getName(), true);
             diffNode.setBufferNodeLeft(new OgnlNode("left", leftFile));
             diffNode.setBufferNodeRight(new OgnlNode("right", rightFile));
 
             contentId = "BufferDiffPanel:" + diffNode.getId();
-            //contentPanel = JMeldPanel.getAlreadyOpen(mainPanel.getTabbedPane(), contentId);
-            if (contentPanel == null) {
-              SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                  diffNode.diff();
+                    diffNode.diff();
                 }
-              });
-            }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -90,23 +93,28 @@ public class OgnlComparison extends SwingWorker<String, Object> {
             result = get();
 
             if (result != null) {
-                JOptionPane.showMessageDialog(mainPanel, result, "Error opening file", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainPanel, result, "Error opening content", JOptionPane.ERROR_MESSAGE);
             } else {
-                if (contentPanel != null) {
-                    // Already opened!
-                    //mainPanel.getTabbedPane().setSelectedComponent(contentPanel);
-                } else {
-                    panel = new OgnlBufferDiffPanel(mainPanel);
-                    panel.setId(contentId);
-                    panel.setDiffNode(diffNode);
-                    mainPanel.add(panel);
-//                    mainPanel.getTabbedPane().addTab(panel.getTitle(), ImageUtil.getSmallImageIcon("stock_new"), panel);
-//                    if (!openInBackground) {
-//                        mainPanel.getTabbedPane().setSelectedComponent(panel);
-//                    }
+                LC lc = new LC().flowX().fill().wrapAfter(1).hideMode(3).insets("0 0 0 0");
+                AC ac = new AC().fill().grow(100f);
+                MigLayout layout = new MigLayout(lc, ac);
+                panel = new OgnlBufferDiffPanel(mainPanel);
+                panel.setLayout(layout);
+                panel.setId(contentId);
+                panel.setDiffNode(diffNode);
 
-                    SwingUtilities.invokeLater(doGoToFirst());
+                Border empty = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+                TitledBorder border = BorderFactory.createTitledBorder(empty, panel.getTitle(), TitledBorder.LEFT, TitledBorder.TOP);
+                panel.setBorder(border);
+                for(Map.Entry<String, OgnlContent> e : leftFile.children().entrySet()) {
+                    OgnlContent left = e.getValue();
+                    OgnlContent right = rightFile.children().get(e.getKey());
+                    OgnlComparison ognlComparison = new OgnlComparison(panel, left, right);
+                    ognlComparison.setOpenInBackground(false);
+                    ognlComparison.execute();
                 }
+                mainPanel.add(panel);
+                //SwingUtilities.invokeLater(doGoToFirst());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -123,15 +131,29 @@ public class OgnlComparison extends SwingWorker<String, Object> {
     }
     
     public static void main(String[] args) {
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        LC lc = new LC().flowX().wrapAfter(1).hideMode(3).insets("0 0 0 0");
+        AC ac = new AC().grow(100f).fill();
+        MigLayout layout = new MigLayout(lc, ac);
+
+        JPanel mainPanel = new JPanel(layout);
+
         JFrame frame = new JFrame();
-        OgnlComparison ognlComparison = new OgnlComparison(mainPanel, "hello\nthis is left", "hello7 this \n right");
-        ognlComparison.setOpenInBackground(true);
-        ognlComparison.execute();
+        frame.setBounds(10, 10, 1400, 1400);
+        frame.setContentPane(new JScrollPane(mainPanel));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainPanel.setSize(100, 100);
-        frame.getContentPane().add(mainPanel);
-        //frame.pack();
+        
+        for(int i=0; i < 7; i++) {
+            StringContent left = new StringContent("field " + i, "this is \nleft field" + i);
+            left.addChild(new StringContent("sub-field" +i, "child of left" + i));
+            
+            StringContent right = new StringContent("field " + i, "this is \nright field" + i);
+            right.addChild(new StringContent("sub-field" +i, "child of right " + i));
+
+            OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
+            ognlComparison.setOpenInBackground(true);
+            ognlComparison.execute();
+        }
+
         frame.setVisible(true);
     }
 }

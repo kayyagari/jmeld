@@ -83,6 +83,8 @@ import org.jmeld.util.node.JMDiffNode;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import net.miginfocom.swing.MigLayout;
+
 /**
  * @author Kiran Ayyagari (kayyagari@apache.org)
  */
@@ -94,7 +96,7 @@ public class OgnlBufferDiffPanel extends AbstractContentPanel implements Configu
     private JPanel mainPanel;
     private OgnlPanel[] filePanels;
     private JMDiffNode diffNode;
-    int filePanelSelectedIndex = -1;
+    private int filePanelSelectedIndex = -1;
     private JMRevision currentRevision;
     private JMDelta selectedDelta;
     private int selectedLine;
@@ -105,7 +107,7 @@ public class OgnlBufferDiffPanel extends AbstractContentPanel implements Configu
 
     private boolean showTree;
     private boolean showLevenstein;
-    private JSplitPane splitPane;
+    //private JSplitPane splitPane;
     private JCheckBox checkSolutionPath;
 
     static Color selectionColor = Color.BLUE;
@@ -315,14 +317,17 @@ public class OgnlBufferDiffPanel extends AbstractContentPanel implements Configu
         columns = "3px, pref, 3px, 0:grow, 5px, min, 60px, 0:grow, 25px, min, 3px, pref, 3px";
         rows = "6px, pref, 3px, fill:0:grow, pref";
 
-        setLayout(new BorderLayout());
+        //setLayout(new BorderLayout());
 
-        if (splitPane != null) {
-            remove(splitPane);
-        }
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, buildFilePanel(columns, rows), buildBottonSplit());
-        add(splitPane);
-
+//        if (splitPane != null) {
+//            remove(splitPane);
+//        }
+//        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, buildFilePanel(columns, rows), buildBottonSplit());
+//        add(splitPane);
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        panel.add(buildFilePanel(columns, rows));
+        add(panel, BorderLayout.CENTER);
         scrollSynchronizer = new ScrollSynchronizer(this, filePanels[LEFT], filePanels[RIGHT]);
 
         setSelectedPanel(filePanels[LEFT]);
@@ -361,19 +366,52 @@ public class OgnlBufferDiffPanel extends AbstractContentPanel implements Configu
         filePanels[RIGHT] = new OgnlPanel(this, BufferDocumentIF.REVISED, RIGHT);
 
         // panel for file1
-        filePanel.add(new RevisionBar(this, filePanels[LEFT], true), cc.xy(2, 4));
+        //filePanel.add(new RevisionBar(this, filePanels[LEFT], true), cc.xy(2, 4));
         filePanel.add(filePanels[LEFT].getScrollPane(), cc.xyw(4, 4, 3));
 
         DiffScrollComponent diffScrollComponent = new DiffScrollComponent(this, LEFT, RIGHT);
         filePanel.add(diffScrollComponent, cc.xy(7, 4));
 
         // panel for file2
-        filePanel.add(new RevisionBar(this, filePanels[RIGHT], false), cc.xy(12, 4));
+        //filePanel.add(new RevisionBar(this, filePanels[RIGHT], false), cc.xy(12, 4));
         filePanel.add(filePanels[RIGHT].getScrollPane(), cc.xyw(8, 4, 3));
 
         filePanels[RIGHT].getEditor().addKeyListener(diffScrollComponent.getKeyListener());
         filePanels[LEFT].getEditor().addKeyListener(diffScrollComponent.getKeyListener());
         filePanel.setMinimumSize(new Dimension(300,200));
+        return filePanel;
+    }
+
+    private JPanel buildFilePanel2(String columns, String rows) {
+        columns = "3px, pref, 3px, 0:grow, 5px, min, 60px, 0:grow, 25px, min, 3px, pref, 3px";
+        rows = "6px, pref, 3px, fill:0:grow, pref";
+
+        columns = "[grow][grow][grow]";
+        rows = "[6px::]";
+        JPanel filePanel = new JPanel();
+        MigLayout layout = new MigLayout("insets 0 8 0 8, novisualpadding, hidemode 3, gap 12 6", columns, rows);
+
+        filePanel.setLayout(layout);
+
+        filePanels = new OgnlPanel[NUMBER_OF_PANELS];
+
+        filePanels[LEFT] = new OgnlPanel(this, BufferDocumentIF.ORIGINAL, LEFT);
+        filePanels[RIGHT] = new OgnlPanel(this, BufferDocumentIF.REVISED, RIGHT);
+
+        // panel for file1
+        //filePanel.add(new RevisionBar(this, filePanels[LEFT], true));
+        filePanel.add(filePanels[LEFT].getScrollPane());
+
+        DiffScrollComponent diffScrollComponent = new DiffScrollComponent(this, LEFT, RIGHT);
+        filePanel.add(diffScrollComponent, "flowy");
+
+        // panel for file2
+        //filePanel.add(new RevisionBar(this, filePanels[RIGHT], false));
+        filePanel.add(filePanels[RIGHT].getScrollPane());
+
+        filePanels[RIGHT].getEditor().addKeyListener(diffScrollComponent.getKeyListener());
+        filePanels[LEFT].getEditor().addKeyListener(diffScrollComponent.getKeyListener());
+        //filePanel.setMinimumSize(new Dimension(300,200));
         return filePanel;
     }
 

@@ -13,23 +13,23 @@ import org.jmeld.ui.text.AbstractBufferDocument;
  */
 public class OgnlDocument extends AbstractBufferDocument {
     // instance variables:
-    private String data;
+    private OgnlContent data;
 
-    public OgnlDocument(String data)
+    public OgnlDocument(OgnlContent data)
     {
       this.data = data;
 
-      setName("sample text");
+      setName(data.getName());
 
-      setShortName("sample-text");
+      setShortName(data.getName());
     }
 
     protected int getBufferSize() {
-        return data.length();
+        return data.toText().length();
     }
 
     public Reader getReader() throws JMeldException {
-        return new StringReader(data);
+        return new StringReader(data.toText());
     }
 
     protected Writer getWriter() throws JMeldException {

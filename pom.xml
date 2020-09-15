@@ -80,6 +80,11 @@
             <artifactId>swingx</artifactId>
             <version>1.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout-swing</artifactId>
+            <version>4.2</version>
+        </dependency>
     </dependencies>
 
     <build>

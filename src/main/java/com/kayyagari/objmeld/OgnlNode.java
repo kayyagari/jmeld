@@ -8,11 +8,11 @@ import org.jmeld.util.node.JMeldNode;
  */
 public class OgnlNode extends JMeldNode implements BufferNode {
 
-    private String data;
+    private OgnlContent data;
     private OgnlDocument document;
     private boolean exists;
 
-    public OgnlNode(String name, String data) {
+    public OgnlNode(String name, OgnlContent data) {
         super(name, true);
         this.data = data;
 
@@ -42,7 +42,7 @@ public class OgnlNode extends JMeldNode implements BufferNode {
 
     @Override
     public long getSize() {
-        return data.length();
+        return data.toText().length();
     }
 
     private boolean isDocumentOutOfDate() {
