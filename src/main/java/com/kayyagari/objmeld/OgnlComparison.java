@@ -1,5 +1,7 @@
 package com.kayyagari.objmeld;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -7,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
@@ -112,10 +113,26 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                 for(Map.Entry<String, OgnlContent> e : leftFile.children().entrySet()) {
                     OgnlContent left = e.getValue();
                     OgnlContent right = rightFile.children().get(e.getKey());
+                    if(right == null) {
+                        right = left.emptyPeer();
+                        rightFile.children().put(right.getName(), right.emptyPeer());
+                    }
                     OgnlComparison ognlComparison = new OgnlComparison(panel, left, right);
                     ognlComparison.setOpenInBackground(false);
                     ognlComparison.execute();
                 }
+                for(Map.Entry<String, OgnlContent> e : rightFile.children().entrySet()) {
+                    OgnlContent right = e.getValue();
+                    OgnlContent left = leftFile.children().get(e.getKey());
+                    if(left == null) {
+                        left = right.emptyPeer();
+                        rightFile.children().put(left.getName(), left.emptyPeer());
+                    }
+                    OgnlComparison ognlComparison = new OgnlComparison(panel, left, right);
+                    ognlComparison.setOpenInBackground(false);
+                    ognlComparison.execute();
+                }
+
                 mainPanel.add(panel);
                 //SwingUtilities.invokeLater(doGoToFirst());
             }
@@ -133,8 +150,12 @@ public class OgnlComparison extends SwingWorker<String, Object> {
         };
     }
     
-    public static void main(String[] args) {
-        LC lc = new LC().flowX().wrapAfter(1).hideMode(3).insets("0 0 0 0");
+    public static void show(List<OgnlContent> left, List<OgnlContent> right) {
+        if(left.size() != right.size()) {
+            throw new IllegalArgumentException("left and right nodes must be of equal length");
+        }
+
+        LC lc = new LC().wrapAfter(1).hideMode(3).insets("0 0 0 0");
         AC ac = new AC().grow(100f).fill();
         MigLayout layout = new MigLayout(lc, ac);
 
@@ -144,19 +165,29 @@ public class OgnlComparison extends SwingWorker<String, Object> {
         frame.setBounds(10, 10, 1400, 1400);
         frame.setContentPane(new JScrollPane(mainPanel));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        for(int i=0; i < 7; i++) {
-            StringContent left = new StringContent("field " + i, "this is \nleft field" + i);
-            left.addChild(new StringContent("sub-field" +i, "child of left" + i));
-            
-            StringContent right = new StringContent("field " + i, "this is \nright field" + i);
-            right.addChild(new StringContent("sub-field" +i, "child of right " + i));
 
-            OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
+        for(int i=0; i < left.size(); i++) {
+            OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left.get(i), right.get(i));
             ognlComparison.setOpenInBackground(true);
             ognlComparison.execute();
         }
 
         frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        int count = 7;
+        List<OgnlContent> leftArr = new ArrayList<>();
+        List<OgnlContent> rightArr = new ArrayList<>();
+        for(int i=0; i < count; i++) {
+            StringContent left = new StringContent("field " + i, "this is \nleft field" + i);
+            left.addChild(new StringContent("sub-field" +i, "child of left" + i));
+            leftArr.add(left);
+
+            StringContent right = new StringContent("field " + i, "this is \nright field" + i);
+            right.addChild(new StringContent("sub-field" +i, "child of right " + i));
+            rightArr.add(right);
+        }
+        show(leftArr, rightArr);
     }
 }

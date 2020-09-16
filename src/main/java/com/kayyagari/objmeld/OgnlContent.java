@@ -6,4 +6,5 @@ public interface OgnlContent {
     public String getName();
     public String toText();
     public Map<String, OgnlContent> children();
+    public OgnlContent emptyPeer();
 }

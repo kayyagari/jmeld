@@ -35,4 +35,10 @@ public class StringContent implements OgnlContent {
     public Map<String, OgnlContent> children() {
         return children;
     }
+
+    @Override
+    public OgnlContent emptyPeer() {
+        StringContent sc = new StringContent(name, null);
+        return sc;
+    }
 }
