@@ -99,7 +99,7 @@ public class OgnlComparison extends SwingWorker<String, Object> {
             if (result != null) {
                 JOptionPane.showMessageDialog(mainPanel, result, "Error opening content", JOptionPane.ERROR_MESSAGE);
             } else {
-                LC lc = new LC().flowX().fill().wrapAfter(1).hideMode(3).insets("0 0 0 0");
+                LC lc = new LC().flowX().fill().wrapAfter(1).hideMode(3).insets("0 0 0 0").maxWidth("400px");
                 AC ac = new AC().fill().grow(100f);
                 MigLayout layout = new MigLayout(lc, ac);
                 panel = new OgnlBufferDiffPanel(mainPanel);
