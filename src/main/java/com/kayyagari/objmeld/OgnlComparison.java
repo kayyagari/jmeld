@@ -117,7 +117,7 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                         right = left.emptyPeer();
                         rightFile.children().put(right.getName(), right.emptyPeer());
                     }
-                    OgnlComparison ognlComparison = new OgnlComparison(panel, left, right);
+                    OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
                     ognlComparison.setOpenInBackground(false);
                     ognlComparison.execute();
                 }
@@ -128,12 +128,13 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                         left = right.emptyPeer();
                         rightFile.children().put(left.getName(), left.emptyPeer());
                     }
-                    OgnlComparison ognlComparison = new OgnlComparison(panel, left, right);
+                    OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
                     ognlComparison.setOpenInBackground(false);
                     ognlComparison.execute();
                 }
 
                 mainPanel.add(panel);
+                panel.setVisible(hasDiff());
                 //SwingUtilities.invokeLater(doGoToFirst());
             }
         } catch (Exception ex) {
@@ -149,8 +150,12 @@ public class OgnlComparison extends SwingWorker<String, Object> {
             }
         };
     }
-    
-    public static void show(List<OgnlContent> left, List<OgnlContent> right) {
+
+    public boolean hasDiff() {
+        return !diffNode.getRevision().getDeltas().isEmpty();
+    }
+
+    public static JPanel prepare(List<OgnlContent> left, List<OgnlContent> right) {
         if(left.size() != right.size()) {
             throw new IllegalArgumentException("left and right nodes must be of equal length");
         }
@@ -161,16 +166,21 @@ public class OgnlComparison extends SwingWorker<String, Object> {
 
         JPanel mainPanel = new JPanel(layout);
 
-        JFrame frame = new JFrame();
-        frame.setBounds(10, 10, 1400, 1400);
-        frame.setContentPane(new JScrollPane(mainPanel));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         for(int i=0; i < left.size(); i++) {
             OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left.get(i), right.get(i));
             ognlComparison.setOpenInBackground(true);
             ognlComparison.execute();
         }
+
+        return mainPanel;
+    }
+
+    public static void show(List<OgnlContent> left, List<OgnlContent> right) {
+        JPanel mainPanel = prepare(left, right);
+        JFrame frame = new JFrame();
+        frame.setBounds(10, 10, 1400, 1400);
+        frame.setContentPane(new JScrollPane(mainPanel));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.setVisible(true);
     }
