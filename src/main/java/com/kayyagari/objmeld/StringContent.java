@@ -23,6 +23,11 @@ public class StringContent implements OgnlContent {
     }
 
     @Override
+    public String getPath() {
+        return name;
+    }
+
+    @Override
     public String toText() {
         return data;
     }

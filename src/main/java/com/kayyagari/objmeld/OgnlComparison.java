@@ -108,7 +108,8 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                 panel.setDiffNode(diffNode);
 
                 Border empty = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-                TitledBorder border = BorderFactory.createTitledBorder(empty, panel.getTitle(), TitledBorder.LEFT, TitledBorder.TOP);
+                TitledBorder border = BorderFactory.createTitledBorder(empty, leftFile.getPath(), TitledBorder.LEFT, TitledBorder.TOP);
+                panel.setToolTipText(leftFile.getPath());
                 panel.setBorder(border);
                 for(Map.Entry<String, OgnlContent> e : leftFile.children().entrySet()) {
                     OgnlContent left = e.getValue();
@@ -127,10 +128,11 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                     if(left == null) {
                         left = right.emptyPeer();
                         rightFile.children().put(left.getName(), left.emptyPeer());
+
+                        OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
+                        ognlComparison.setOpenInBackground(false);
+                        ognlComparison.execute();
                     }
-                    OgnlComparison ognlComparison = new OgnlComparison(mainPanel, left, right);
-                    ognlComparison.setOpenInBackground(false);
-                    ognlComparison.execute();
                 }
 
                 mainPanel.add(panel);
