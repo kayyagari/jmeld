@@ -7,7 +7,7 @@
     <version>3.4.0</version>
     <packaging>jar</packaging>
 
-    <name>jmeld</name>
+    <name>objmeld</name>
     <url>https://github.com/albfan/jmeld</url>
 
     <properties>
@@ -121,7 +121,7 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>${maven-assembly-plugin.version}</version>
@@ -213,7 +213,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
