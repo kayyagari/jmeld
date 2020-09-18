@@ -575,7 +575,7 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
     public CaretListener getCaretListener() {
         return new CaretListener() {
             public void caretUpdate(CaretEvent fe) {
-                System.out.println(fe);
+                //System.out.println(fe);
                 //updateFilePanelBar();
             }
         };
