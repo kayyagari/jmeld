@@ -22,10 +22,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,7 +54,6 @@ import org.jmeld.ui.text.BufferDocumentChangeListenerIF;
 import org.jmeld.ui.text.BufferDocumentIF;
 import org.jmeld.ui.text.JMDocumentEvent;
 import org.jmeld.ui.util.FontUtil;
-import org.jmeld.ui.util.ImageUtil;
 import org.jmeld.util.StringUtil;
 import org.jmeld.util.conf.ConfigurationListenerIF;
 
@@ -71,11 +67,9 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
     private String name;
     private int position;
     private DiffLabel fileLabel;
-    private JComboBox fileBox;
     private JScrollPane scrollPane;
     private JTextArea editor;
     private BufferDocumentIF bufferDocument;
-    private JButton saveButton;
     private Timer timer;
     private SearchHits searchHits;
     private boolean selected;
@@ -113,28 +107,13 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
                     "JScrollBar.isFreeStanding", Boolean.TRUE);
         }
 
-        fileBox = new JComboBox();
-        fileBox.addActionListener(getFileBoxAction());
-
         fileLabel = new DiffLabel();
-
-        saveButton = new JButton();
-        saveButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        saveButton.setContentAreaFilled(false);
-        icon = ImageUtil.getSmallImageIcon("stock_save");
-        saveButton.setIcon(icon);
-        saveButton.setDisabledIcon(ImageUtil.createTransparentIcon(icon));
-        saveButton.addActionListener(getSaveButtonAction());
 
         timer = new Timer(100, refresh());
         timer.setRepeats(false);
 
         initConfiguration();
         getConfiguration().addConfigurationListener(this);
-    }
-
-    JComboBox getFileBox() {
-        return fileBox;
     }
 
     DiffLabel getFileLabel() {
@@ -151,10 +130,6 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
 
     public BufferDocumentIF getBufferDocument() {
         return bufferDocument;
-    }
-
-    JButton getSaveButton() {
-        return saveButton;
     }
 
     public void setBufferDocument(BufferDocumentIF bd) {
@@ -184,8 +159,6 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
             }
 
             fileName = bufferDocument.getName();
-            fileBox.addItem(fileName);
-            fileBox.setSelectedItem(fileName);
 
             fileLabel.setText(fileName);
 
@@ -539,15 +512,11 @@ public class OgnlPanel implements BufferDocumentChangeListenerIF, ConfigurationL
             }
         }
 
-        checkSearch();
-        checkActions();
+        //checkSearch();
+        //checkActions();
     }
 
     private void checkActions() {
-        if (saveButton.isEnabled() != isDocumentChanged()) {
-            saveButton.setEnabled(isDocumentChanged());
-        }
-
         diffPanel.checkActions();
     }
 
