@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jmeld</groupId>
-    <artifactId>jmeld</artifactId>
+    <artifactId>objmeld</artifactId>
     <version>3.4.0</version>
     <packaging>jar</packaging>
 
