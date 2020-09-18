@@ -108,7 +108,9 @@ public class OgnlComparison extends SwingWorker<String, Object> {
                 panel.setDiffNode(diffNode);
 
                 Border empty = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-                TitledBorder border = BorderFactory.createTitledBorder(empty, leftFile.getPath(), TitledBorder.LEFT, TitledBorder.TOP);
+                String borderTitle = leftFile.getPath();
+                borderTitle = borderTitle.replaceAll("\\.", " > ");
+                TitledBorder border = BorderFactory.createTitledBorder(empty, borderTitle, TitledBorder.LEFT, TitledBorder.TOP);
                 panel.setToolTipText(leftFile.getPath());
                 panel.setBorder(border);
                 for(Map.Entry<String, OgnlContent> e : leftFile.children().entrySet()) {
